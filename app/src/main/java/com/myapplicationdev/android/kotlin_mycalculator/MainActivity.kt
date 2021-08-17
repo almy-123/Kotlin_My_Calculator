@@ -80,8 +80,9 @@ class MainActivity : AppCompatActivity() {
         var minus = calcList.contains("-")
         var plus = calcList.contains("+")
         Log.i("before calcList", calcList.toString())
-        while (times || div) {
+        do {
             for (i in calcList.size - 1 downTo 0) {
+                Log.i("$i", calcList.get(i).toString())
                 var curr = calcList.get(i).toString()
                 if (curr.equals("/")) {
                     var next = calcList.get(i + 1).toString().toDouble()
@@ -96,13 +97,36 @@ class MainActivity : AppCompatActivity() {
                     var prev = calcList.get(i - 1).toString().toDouble()
                     var result = BigDecimal(prev.div(next))
 
-                    calcList.remove(i + 1)
-                    calcList.remove(i)
+                    calcList.removeAt(i + 1)
+                    calcList.removeAt(i)
                     calcList.set(i - 1, result)
                 }
             }
-            Log.i("after calcList1", calcList.toString())
-        }
-        Log.i("after calcList2", calcList.toString())
+        } while (times || div)
+
+        do {
+            for (i in calcList.size - 1 downTo 0) {
+                var curr = calcList.get(i).toString()
+                if (curr.equals("+")) {
+                    var next = calcList.get(i + 1).toString().toDouble()
+                    var prev = calcList.get(i - 1).toString().toDouble()
+                    var result = prev + next
+
+                    calcList.removeAt(i + 1)
+                    calcList.removeAt(i)
+                    calcList.set(i - 1, result)
+                } else if (curr.equals("-")) {
+                    var next = calcList.get(i + 1).toString().toDouble()
+                    var prev = calcList.get(i - 1).toString().toDouble()
+                    var result = BigDecimal(prev.div(next))
+
+                    calcList.removeAt(i + 1)
+                    calcList.removeAt(i)
+                    calcList.set(i - 1, result)
+                }
+            }
+        } while (minus || plus)
+
+        tvResult.text = calcList.joinToString(separator = "")
     }
 }
