@@ -1,4 +1,4 @@
-package com.myapplicationdev.android.kotlin_mycalculator
+package com.myapplicationdev.android.testkotlincalculator
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,33 +7,17 @@ import android.view.View
 import android.widget.Button
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
-import kotlin.reflect.typeOf
+import java.math.BigDecimal
 
 class MainActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-//        var test = arrayListOf<Any>()
-//        test.add(5)
-//        test.add("*")
-//        test.add(26)
-//
-//        for (i in 0..test.size - 1) {
-//            if (i!=0){
-//                Log.i("prev$i", test.get(i-1).toString())
-//            }
-//
-//            Log.i("curr$i", test.get(i).toString())
-//
-//            if (i != test.size-1){
-//                Log.i("next$i", test.get(i+1).toString())
-//            }
-//        }
     }
 
     var calcList = arrayListOf<Any>()
+    var currNum = arrayListOf<Any>()
+    var toDisplay = arrayListOf<Any>()
 
     fun btnOnClick(view: View) {
         var msg = ""
@@ -42,10 +26,6 @@ class MainActivity : AppCompatActivity() {
             btn1.id -> {
                 // clear all inputs and values
                 msg = "AC"
-                toDisplay = ""
-                tvResult.text = "0"
-                calcList.clear()
-                clearCurrNumber()
             }
             btn2.id -> msg = "/"
             btn3.id -> msg = "7"
@@ -61,75 +41,68 @@ class MainActivity : AppCompatActivity() {
             btn13.id -> msg = "3"
             btn14.id -> msg = "+"
             btn15.id -> msg = "0"
-            btn16.id -> msg = "."
+            btn16.id -> {
+                msg = "."
+                if (!currNum.get(currNum.size - 1).equals(".")) {
+                    currNum.add(msg)
+                }
+
+            }
             btn17.id -> msg = "="
         }
 
         try {
-            // if user entered number
             var num = msg.toInt()
-            appendNumber(num.toString())
+            currNum.add(num)
         } catch (e: Exception) {
-            var clear = msg.equals("AC")
-            var equal = msg.equals("=")
-            if (!clear && !equal) {
-                appendExpression(msg)
-            } else if (equal) {
-                // add last number
-                currNum = stringCurr.toInt()
-                calcList.add(currNum)
-
-                doCalculation()
+            // if msg is not number
+            if (!msg.equals(".") && !msg.equals("=")) {
+                calcList.add(currNum.joinToString(separator = ""))
+                calcList.add(msg)
+                currNum.clear()
+            } else if (msg.equals("=")) {
+                calcList.add(currNum.joinToString(separator = ""))
+                currNum.clear()
+                calculate()
             }
-
         }
 
-        Log.d("test", calcList.toString())
+        toDisplay.add(msg)
+        tvResult.text = toDisplay.joinToString(separator = "")
+        Log.i("currNum", currNum.toString())
+        Log.i("calcList", calcList.toString())
+
     }
 
-    fun clearCurrNumber() {
-        currNum = 0
-        stringCurr = ""
-    }
+    fun calculate() {
+        var times = calcList.contains("*")
+        var div = calcList.contains("/")
+        var minus = calcList.contains("-")
+        var plus = calcList.contains("+")
+        Log.i("before calcList", calcList.toString())
+        while (times || div) {
+            for (i in calcList.size - 1 downTo 0) {
+                var curr = calcList.get(i).toString()
+                if (curr.equals("/")) {
+                    var next = calcList.get(i + 1).toString().toDouble()
+                    var prev = calcList.get(i - 1).toString().toDouble()
+                    var result = prev / next
 
-    var toDisplay = ""
-    var currNum = 0
-    var stringCurr = ""
+                    calcList.removeAt(i + 1)
+                    calcList.removeAt(i)
+                    calcList.set(i - 1, result)
+                } else if (curr.equals("*")) {
+                    var next = calcList.get(i + 1).toString().toDouble()
+                    var prev = calcList.get(i - 1).toString().toDouble()
+                    var result = BigDecimal(prev.div(next))
 
-    fun appendNumber(entered: String) {
-        toDisplay += entered
-        stringCurr += entered
-        tvResult.text = toDisplay
-    }
-
-    fun appendExpression(exp: String) {
-        currNum = stringCurr.toInt()
-        calcList.add(currNum)
-        calcList.add(exp)
-        clearCurrNumber()
-
-        toDisplay += exp
-        tvResult.text = toDisplay
-    }
-
-    var sum = 0
-    fun doCalculation() {
-        for (i in 0..calcList.size - 1) {
-            try {
-                if (calcList.get(i) is String) {
-                    if (i != 0) {
-                        Log.i("prev$i", calcList.get(i - 1).toString())
-                    }
-
-                    Log.i("string val", calcList.get(i).toString())
-
-                    if (i != calcList.size - 1) {
-                        Log.i("next$i", calcList.get(i + 1).toString())
-                    }
+                    calcList.remove(i + 1)
+                    calcList.remove(i)
+                    calcList.set(i - 1, result)
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
+            Log.i("after calcList1", calcList.toString())
         }
+        Log.i("after calcList2", calcList.toString())
     }
 }
