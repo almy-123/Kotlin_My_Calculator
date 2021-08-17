@@ -1,4 +1,4 @@
-package com.myapplicationdev.android.testkotlincalculator
+package com.myapplicationdev.android.kotlin_mycalculator
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +13,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
     }
 
     var calcList = arrayListOf<Any>()
@@ -55,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             btn17.id -> msg = "="
         }
 
-        if (!msg.equals("AC")) {
+        if (!msg.equals("AC") && currNum.isNotEmpty()) {
             try {
                 var num = msg.toInt()
                 currNum.add(num)
@@ -136,7 +137,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         } while (calcList.contains("-") || calcList.contains("+"))
-
 
     }
 }
