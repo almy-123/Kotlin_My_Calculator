@@ -68,10 +68,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         toDisplay.add(msg)
-        tvResult.text = toDisplay.joinToString(separator = "")
+
         Log.i("currNum", currNum.toString())
         Log.i("calcList", calcList.toString())
 
+
+        if (calcList.size == 1) {
+            tvResult.text = calcList.joinToString(separator = "")
+        } else {
+            tvResult.text = toDisplay.joinToString(separator = "")
+        }
     }
 
     fun calculate() {
@@ -80,9 +86,9 @@ class MainActivity : AppCompatActivity() {
         var minus = calcList.contains("-")
         var plus = calcList.contains("+")
         Log.i("before calcList", calcList.toString())
+
         do {
             for (i in calcList.size - 1 downTo 0) {
-                Log.i("$i", calcList.get(i).toString())
                 var curr = calcList.get(i).toString()
                 if (curr.equals("/")) {
                     var next = calcList.get(i + 1).toString().toDouble()
@@ -95,14 +101,14 @@ class MainActivity : AppCompatActivity() {
                 } else if (curr.equals("*")) {
                     var next = calcList.get(i + 1).toString().toDouble()
                     var prev = calcList.get(i - 1).toString().toDouble()
-                    var result = BigDecimal(prev.div(next))
+                    var result = prev * next
 
                     calcList.removeAt(i + 1)
                     calcList.removeAt(i)
                     calcList.set(i - 1, result)
                 }
             }
-        } while (times || div)
+        } while (calcList.contains("/") || calcList.contains("*"))
 
         do {
             for (i in calcList.size - 1 downTo 0) {
@@ -125,8 +131,8 @@ class MainActivity : AppCompatActivity() {
                     calcList.set(i - 1, result)
                 }
             }
-        } while (minus || plus)
+        } while (calcList.contains("-") || calcList.contains("+"))
 
-        tvResult.text = calcList.joinToString(separator = "")
+
     }
 }
