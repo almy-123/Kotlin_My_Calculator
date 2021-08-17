@@ -26,6 +26,10 @@ class MainActivity : AppCompatActivity() {
             btn1.id -> {
                 // clear all inputs and values
                 msg = "AC"
+                calcList.clear()
+                currNum.clear()
+                toDisplay.clear()
+                tvResult.text = "0"
             }
             btn2.id -> msg = "/"
             btn3.id -> msg = "7"
@@ -51,40 +55,40 @@ class MainActivity : AppCompatActivity() {
             btn17.id -> msg = "="
         }
 
-        try {
-            var num = msg.toInt()
-            currNum.add(num)
-        } catch (e: Exception) {
-            // if msg is not number
-            if (!msg.equals(".") && !msg.equals("=")) {
-                calcList.add(currNum.joinToString(separator = ""))
-                calcList.add(msg)
-                currNum.clear()
-            } else if (msg.equals("=")) {
-                calcList.add(currNum.joinToString(separator = ""))
-                currNum.clear()
-                calculate()
+        if (!msg.equals("AC")) {
+            try {
+                var num = msg.toInt()
+                currNum.add(num)
+            } catch (e: Exception) {
+                // if msg is not number
+                if (!msg.equals(".") && !msg.equals("=")) {
+                    calcList.add(currNum.joinToString(separator = ""))
+                    calcList.add(msg)
+                    currNum.clear()
+                } else if (msg.equals("=")) {
+                    calcList.add(currNum.joinToString(separator = ""))
+                    calculate()
+                }
             }
+            toDisplay.add(msg)
+
+            Log.i("currNum", currNum.toString())
+            Log.i("calcList", calcList.toString())
         }
-
-        toDisplay.add(msg)
-
-        Log.i("currNum", currNum.toString())
-        Log.i("calcList", calcList.toString())
 
 
         if (calcList.size == 1) {
             tvResult.text = calcList.joinToString(separator = "")
+            calcList.clear()
+            currNum.clear()
+            toDisplay.clear()
         } else {
             tvResult.text = toDisplay.joinToString(separator = "")
         }
     }
 
     fun calculate() {
-        var times = calcList.contains("*")
-        var div = calcList.contains("/")
-        var minus = calcList.contains("-")
-        var plus = calcList.contains("+")
+
         Log.i("before calcList", calcList.toString())
 
         do {
